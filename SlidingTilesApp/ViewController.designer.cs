@@ -20,15 +20,7 @@ namespace SlidingTilesApp
 
         [Outlet]
         [GeneratedCode ("iOS Designer", "1.0")]
-        UIKit.UIButton resetButton { get; set; }
-
-        [Outlet]
-        [GeneratedCode ("iOS Designer", "1.0")]
         UIKit.UIButton shuffleButton { get; set; }
-
-        [Action ("ResetButton_TouchUpInside:")]
-        [GeneratedCode ("iOS Designer", "1.0")]
-        partial void ResetButton_TouchUpInside (UIKit.UIButton sender);
 
         [Action ("ShuffleButton_TouchUpInside:")]
         [GeneratedCode ("iOS Designer", "1.0")]
@@ -39,11 +31,6 @@ namespace SlidingTilesApp
             if (boardView != null) {
                 boardView.Dispose ();
                 boardView = null;
-            }
-
-            if (resetButton != null) {
-                resetButton.Dispose ();
-                resetButton = null;
             }
 
             if (shuffleButton != null) {

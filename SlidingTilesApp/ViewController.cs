@@ -1,5 +1,4 @@
-﻿using CoreGraphics;
-using Foundation;
+﻿using Foundation;
 using SlidingTilesApp.Logic;
 using System;
 using System.Diagnostics;
@@ -29,7 +28,7 @@ namespace SlidingTilesApp
         public override void ViewDidAppear(bool animated)
         {
             base.ViewDidAppear(animated);
-            puzzle = new GraphicPuzzle(boardWidth, boardHeight, 2, boardView);
+            puzzle = new GraphicPuzzle(boardWidth, boardHeight, boardView);
             puzzle.Shuffle();
         }
 
@@ -38,54 +37,42 @@ namespace SlidingTilesApp
             base.TouchesEnded(touches, evt);
             if (touches.Count == 1)
             {
-                try
+                if (touches.AnyObject is UITouch)
                 {
-                    // Get the touch that was activated within the view
                     var myTouch = (UITouch)touches.AnyObject;
                     var touchedView = myTouch.View;
 
-                    if (touchedView is GameTile)
+                    if (touchedView is GameTile tile)
                     {
-                        GameTile tile = ((GameTile)touchedView);
-                        puzzle.Move(new System.Drawing.Point(tile.Col+1, tile.Row+1));
-                        if (puzzle.IsCompleted)
-                        {
-                            UIApplication.SharedApplication.InvokeOnMainThread(new Action(() =>
-                            {
-                                var alert = UIAlertController.Create("HURRAH!", "You completed the game!",
-                                                                     UIAlertControllerStyle.Alert);
-                                alert.AddAction(UIAlertAction.Create("OK",
-                                                                     UIAlertActionStyle.Default, a =>
-                                                                     {
-                                                                         puzzle.Shuffle();
-                                                                     }));
-
-                                // Display the UIAlertController to the current view
-                                this.ShowViewController(alert, this);
-                            }));
-                        }
+                        HandleTileTouch(tile);
                     }
-                    else
-                    {
-                        Debug.WriteLine("touchedView is " + touchedView.GetType());
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine("touchedView is not a UIImageView: " + e.Message);
                 }
             }
         }
 
-        partial void ResetButton_TouchUpInside(UIButton sender)
+        private void HandleTileTouch(GameTile tile)
         {
-            foreach (var v in boardView.Subviews)
+            puzzle.Move(new System.Drawing.Point(tile.Col + 1, tile.Row + 1));
+            if (puzzle.IsCompleted)
             {
-                v.RemoveFromSuperview();
+                ShowPopup();
             }
+        }
 
-            puzzle = new GraphicPuzzle(boardWidth, boardHeight, 2, boardView);
-            puzzle.Draw();
+        private void ShowPopup()
+        {
+            UIApplication.SharedApplication.InvokeOnMainThread(new Action(() =>
+            {
+                var alert = UIAlertController.Create("HURRAH!", "You completed the game!",
+                                                     UIAlertControllerStyle.Alert);
+                alert.AddAction(UIAlertAction.Create("OK",
+                                                     UIAlertActionStyle.Default, a =>
+                                                     {
+                                                         puzzle.Shuffle();
+                                                     }));
+
+                this.ShowViewController(alert, this);
+            }));
         }
 
         partial void ShuffleButton_TouchUpInside(UIButton sender)
